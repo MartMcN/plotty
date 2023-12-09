@@ -4,7 +4,7 @@
 // Very Strange to me, aparently you need a "view" object.
 
 // File Selection
-const fileInputEl = document.querySelector(".files__selected");
+const fileInputEl = document.querySelector("#file-input");
 let selectedFile;
 
 // File Reading object
@@ -113,22 +113,6 @@ const parseLine = function (data) {
   processData(readings);
 };
 
-///////////
-
-// const CSV =
-//   "https://raw.githubusercontent.com/chris3edwards3/exampledata/master/plotlyJS/line.csv";
-
-const CSV = "test_data.csv";
-
-function plotFromCSV() {
-  // Creates an array of of objects, the object has a property for each column named
-  // as per the columm header with the vale are per the row.
-  Plotly.d3.csv(CSV, function (err, rows) {
-    console.dir(rows);
-    processData(rows);
-  });
-}
-
 function processData(allRows) {
   let ticks = [];
   let mVolts = [];
@@ -142,8 +126,8 @@ function processData(allRows) {
     i += 1;
   }
 
-  console.log("ticks", ticks);
-  console.log("volts", mVolts);
+  //console.log("ticks", ticks);
+  //console.log("volts", mVolts);
 
   makePlotly(ticks, mVolts);
 }
@@ -155,32 +139,108 @@ function makePlotly(xData, yData) {
       y: yData,
       //name: "TEST DATA",
       line: {
-        color: "#387fba",
+        color: "#ff0000ff",
         width: 1,
       },
     },
   ];
 
   let layout = {
+    title: "Battery Voltage",
+    titlefont: {
+      family: "Arial, sans-serif",
+      size: 22,
+      color: "black",
+    },
     //autosize: false,
     //width: 500,
-    //height: 800,
+    height: 700,
     margin: {
-      l: 50,
-      r: 50,
-      b: 50,
-      t: 50,
-      pad: 4,
+      b: 60,
+      t: 60,
+      pad: 16,
     },
-    paper_bgcolor: "#7f7f7f",
-    plot_bgcolor: "#c7c7c7",
+    paper_bgcolor: "#eee",
+    plot_bgcolor: "#eee",
 
     //title: "Basic Line Chart",
     showlegend: false,
     yaxis: {
+      titlefont: {
+        family: "Arial, sans-serif",
+        size: 18,
+        color: "black",
+      },
+      title: "Volts mV",
       range: [0, 5000],
     },
     xaxis: {
+      //tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+      //tick0: 0,
+      //dtick: (60 * 60) / 5,
+      //dtick: (60 * 60) / 5,
+
+      tickmode: "array", // If "array", the placement of the ticks is set via `tickvals` and the tick text is `ticktext`.
+      tickvals: [
+        0,
+        720 * 2,
+        720 * 4,
+        720 * 6,
+        720 * 8,
+        720 * 10,
+        720 * 12,
+        720 * 14,
+        720 * 16,
+        720 * 18,
+        720 * 20,
+        720 * 22,
+        720 * 24,
+        720 * 26,
+        720 * 28,
+        720 * 30,
+        720 * 32,
+        720 * 34,
+        720 * 36,
+        720 * 38,
+        720 * 40,
+        720 * 42,
+        720 * 44,
+        720 * 46,
+        720 * 48,
+      ],
+      ticktext: [
+        "0",
+        "2",
+        "4",
+        "6",
+        "8",
+        "10",
+        "12",
+        "14",
+        "16",
+        "18",
+        "20",
+        "22",
+        "24",
+        "26",
+        "28",
+        "30",
+        "32",
+        "34",
+        "36",
+        "38",
+        "40",
+        "42",
+        "44",
+        "48",
+      ],
+
+      titlefont: {
+        family: "Arial, sans-serif",
+        size: 18,
+        color: "black",
+      },
+      title: "Ticks",
       // tickformat: "%d/%m/%y"
     },
   };

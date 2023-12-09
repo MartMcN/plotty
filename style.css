@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap");
 
 * {
-  margin: 5px;
-  padding: 5px;
+  margin: 1px;
+  padding: 1px;
   /*box-sizing: inherit;*/
 }
 
@@ -11,4 +11,29 @@ body {
   color: #eee;
   background-color: #222;
   /* background-color: #60b347; */
+}
+
+h2 {
+  padding: 20px;
+  margin: 20px;
+}
+
+#file-input {
+  display: none;
+}
+
+#file-input-label {
+  padding: 20px;
+  margin: 40px;
+  background-color: #eee;
+  color: #222;
+  cursor: pointer;
+}
+
+#file-input-label:hover {
+  background-color: #28caca;
+}
+
+#plot {
+  margin: 40px;
 }
