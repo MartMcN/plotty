@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap");
 
 * {
-  margin: 1px;
-  padding: 1px;
+  margin: 0px;
+
   /*box-sizing: inherit;*/
 }
 
@@ -10,7 +10,6 @@ body {
   font-family: "Press Start 2P", sans-serif;
   color: #eee;
   background-color: #222;
-  /* background-color: #60b347; */
 }
 
 h2 {
@@ -23,8 +22,10 @@ h2 {
 }
 
 #file-input-label {
+  display: block;
   padding: 20px;
-  margin: 40px;
+  margin: 20px;
+  width: 220px;
   background-color: #eee;
   color: #222;
   cursor: pointer;
@@ -35,5 +36,8 @@ h2 {
 }
 
 #plot {
-  margin: 40px;
+  background-color: #eee;
+  width: 95%%;
+  height: 700px;
+  margin: 20px;
 }
