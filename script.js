@@ -1,55 +1,97 @@
 //'use strict'
 
-// Tryin to figure out how to read data from a file.
-// Very Strange to me, aparently you need a "view" object.
-
-// File Selection
-const fileInputEl = document.querySelector("#file-input");
-let selectedFile;
-
-// File Reading object
-const reader = new FileReader();
-let view;
-
-// Text Decoder
-const win1251decoder = new TextDecoder("windows-1251");
-
-// Handlers
-
-// File Selection
-fileInputEl.addEventListener("change", () => {
-  // Choose the first file
-  [selectedFile] = fileInputEl.files;
-
-  // Start loading the file
-  reader.readAsArrayBuffer(selectedFile);
-});
-
-// File Loaded Handler
-reader.onloadend = () => {
-  //
-  console.log("File Loaded", reader.readyState); // readyState will be 2
-  //
-  view = new Uint8Array(reader.result);
-  console.log(view);
-
-  // Parse the Input
-  parseLine(view);
-};
-
+// constants
 const HASH = 35; // #
 const QMARK = 63; // ?
 const CARET = 94; // ^
 const COMMA = 44; // ,
 
+// Select the #file-input element
+const fileInputEl = document.querySelector("#file-input");
+
+// Install change event listener on the element
+const getFileName = function () {
+  return new Promise(function (resolve, reject) {
+    // File Selection Handler
+    fileInputEl.addEventListener("change", () => {
+      // Take the first file
+      [selectedFile] = fileInputEl.files;
+
+      resolve(selectedFile);
+    });
+  });
+};
+
+// File loaded
+const fileLoaded = function (reader) {
+  return new Promise(function (resolve, err) {
+    // File Loaded Handler
+    reader.onloadend = () => {
+      console.log("File Loaded", reader.readyState); // readyState will be 2
+      resolve(true);
+    };
+  });
+};
+
+const startSequence = async function () {
+  try {
+    // Wait for user to select File
+    let selectedFileName = await getFileName();
+    console.log(`File Selected ${selectedFileName.name}`);
+
+    // Create a reader object
+    const reader = new FileReader();
+
+    // Start reading the file
+    reader.readAsArrayBuffer(selectedFileName);
+    console.log(`File Reading started`);
+
+    // Wait for the file to be Loaded
+    const file_ready = await fileLoaded(reader);
+    console.log(`File load Success`);
+
+    // File data is read as a array of bytes
+    const data = new Uint8Array(reader.result);
+    if (data.length === 0) throw new Error("File Empty");
+
+    // Parse the data looking  for the battery voltages
+    const parsedData = parseFileData(data);
+    if (parsedData.length === 0) throw new Error("No Battery Data in File");
+    console.log(parsedData);
+
+    // Process further and plot it
+    processDataPloty(parsedData);
+  } catch (err) {
+    // Clear the plot if there is one
+    console.log(`Error: ${err}`);
+    alert(`Error: ${err}`);
+    const plotEl = document.querySelector("#plot");
+    if (typeof plotEl.data.length === "number" && plotEl.data.length >= 1) {
+      Plotly.deleteTraces("plot", 0);
+    }
+  }
+};
+
+const mainApp = async function () {
+  while (true) {
+    console.log("This seems a bit crummpy, there must be a better way");
+    await startSequence();
+  }
+};
+
+mainApp();
+
 // looking for "##?^##,""
 // Format of data "##?^##,123456,123456,"
 // First number is the tick must be 6 or less characters
 // Second number is voltage in mV 6 or less characters
+//
+// Returns an array of objects
+// { ticks: 123, volts: 3203 }
+const parseFileData = function (data) {
+  const win1251decoder = new TextDecoder("windows-1251");
+  const readings = [];
 
-let readings = [];
-
-const parseLine = function (data) {
   // Find a HASH
   data.forEach((el, index) => {
     if (el != HASH) return false;
@@ -109,11 +151,10 @@ const parseLine = function (data) {
     }
   });
 
-  // Send the data of for plotting
-  processData(readings);
+  return readings;
 };
 
-function processData(allRows) {
+function processDataPloty(allRows) {
   let ticks = [];
   let mVolts = [];
   let row;
@@ -125,9 +166,6 @@ function processData(allRows) {
     mVolts.push(row["volts"]);
     i += 1;
   }
-
-  //console.log("ticks", ticks);
-  //console.log("volts", mVolts);
 
   makePlotly(ticks, mVolts);
 }
