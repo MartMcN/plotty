@@ -1,26 +1,14 @@
 //'use strict'
 
-// constants
-const HASH = 35; // #
-const QMARK = 63; // ?
-const CARET = 94; // ^
-const COMMA = 44; // ,
-
 // Select the #file-input element
 const fileInputEl = document.querySelector("#file-input");
 
-// Install change event listener on the element
-const getFileName = function () {
-  return new Promise(function (resolve, reject) {
-    // File Selection Handler
-    fileInputEl.addEventListener("change", () => {
-      // Take the first file
-      [selectedFile] = fileInputEl.files;
+fileInputEl.addEventListener("change", () => {
+  // Take the first file
+  [selectedFile] = fileInputEl.files;
 
-      resolve(selectedFile);
-    });
-  });
-};
+  startSequence(selectedFile);
+});
 
 // File loaded
 const fileLoaded = function (reader) {
@@ -33,17 +21,13 @@ const fileLoaded = function (reader) {
   });
 };
 
-const startSequence = async function () {
+const startSequence = async function (selectedFile) {
   try {
-    // Wait for user to select File
-    let selectedFileName = await getFileName();
-    console.log(`File Selected ${selectedFileName.name}`);
-
     // Create a reader object
     const reader = new FileReader();
 
     // Start reading the file
-    reader.readAsArrayBuffer(selectedFileName);
+    reader.readAsArrayBuffer(selectedFile);
     console.log(`File Reading started`);
 
     // Wait for the file to be Loaded
@@ -72,15 +56,6 @@ const startSequence = async function () {
   }
 };
 
-const mainApp = async function () {
-  while (true) {
-    console.log("This seems a bit crummpy, there must be a better way");
-    await startSequence();
-  }
-};
-
-mainApp();
-
 // looking for "##?^##,""
 // Format of data "##?^##,123456,123456,"
 // First number is the tick must be 6 or less characters
@@ -89,6 +64,11 @@ mainApp();
 // Returns an array of objects
 // { ticks: 123, volts: 3203 }
 const parseFileData = function (data) {
+  const HASH = 35; // #
+  const QMARK = 63; // ?
+  const CARET = 94; // ^
+  const COMMA = 44; // ,
+
   const win1251decoder = new TextDecoder("windows-1251");
   const readings = [];
 
@@ -278,7 +258,7 @@ function makePlotly(xData, yData) {
         size: 18,
         color: "black",
       },
-      title: "Ticks",
+      title: "Hours",
       // tickformat: "%d/%m/%y"
     },
   };
