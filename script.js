@@ -122,12 +122,7 @@ const parseFileData = function (data) {
       if (searchDone != "found") return false;
       const voltage = +win1251decoder.decode(data.slice(indexStart, index));
 
-      const reading = {
-        ticks: tick,
-        volts: voltage,
-      };
-
-      readings.push(reading);
+      readings.push({ tick, voltage });
     }
   });
 
@@ -142,8 +137,8 @@ function processDataPloty(allRows) {
   let i = 0;
   while (i < allRows.length) {
     row = allRows[i];
-    ticks.push(row["ticks"]);
-    mVolts.push(row["volts"]);
+    ticks.push(row["tick"]);
+    mVolts.push(row["voltage"]);
     i += 1;
   }
 
